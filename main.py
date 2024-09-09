@@ -41,6 +41,18 @@ def compute_ciphertext_probability(prob_m: list, prob_k: list, cipher_table: lis
     
     return prob_ciphertext
 
+def compute_open_text_ciphertext_probability(prob_m: list, prob_k: list, cipher_table: list[list]) -> list[list]:
+    n = len(prob_m)
+
+    prob = [[0 for j in range(n)] for i in range(n)]
+
+    for m in range(n):
+        for k in range(n):
+            c = cipher_table[k][m]
+            prob[m][c] += prob_k[k] * prob_m[m]
+    
+    return prob
+
 def main():
     pass
 
