@@ -53,8 +53,23 @@ def compute_open_text_ciphertext_probability(prob_m: list, prob_k: list, cipher_
     
     return prob
 
+def compute_open_text_if_ciphertext_probability(prob_m_c: list[list], prob_c: list) -> list[list]:
+    n = len(prob_m_c)
+
+    prob = [[0 for j in range(n)] for i in range(n)]
+
+    for m in range(n):
+        for c in range(n):
+            prob[m][c] += prob_m_c[m][c] / prob_c[c]
+ 
+    return prob
+
 def main():
-    pass
+    prob_c = compute_ciphertext_probability(prob_m=PROB_OPEN_TEXT, prob_k=PROB_KEY, cipher_table=CIPHER_TABLE)
+    prob_m_c = compute_open_text_ciphertext_probability(prob_m=PROB_OPEN_TEXT, prob_k=PROB_KEY, cipher_table=CIPHER_TABLE)
+    prob_m_if_c = compute_open_text_if_ciphertext_probability(prob_m_c=prob_m_c, prob_c=prob_c)
+
+    
 
 if __name__ == "__main__":
     main()
