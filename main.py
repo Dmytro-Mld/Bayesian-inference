@@ -29,7 +29,17 @@ PROB_OPEN_TEXT = [0.24, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.
 # Probability distribution of the key space
 PROB_KEY = [0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
 
+def compute_ciphertext_probability(prob_m: list, prob_k: list, cipher_table: list[list]) -> list:
+    n = len(prob_m)
 
+    prob_ciphertext = [0 for i in range(n)]
+
+    for m in range(n):
+        for k in range(n):
+            c = cipher_table[k][m]
+            prob_ciphertext[c] += prob_k[k] * prob_m[m]
+    
+    return prob_ciphertext
 
 def main():
     pass
