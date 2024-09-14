@@ -79,6 +79,18 @@ def compute_optimal_deterministic_decision_function(prob_m_if_c: list[list]) -> 
  
     return rez
 
+def loss_func (od_df: list) -> list:
+    n = len(od_df)
+
+    ls_func_res = [1 for i in range(n)]
+
+    max_index = od_df.index(max(od_df))
+
+    ls_func_res[max_index] = 0
+
+    return ls_func_res
+
+
 def bayesian_decision_from_statistical_decision_function(prob_m_c: list[list], c) -> int:
     n_ = len(prob_m_c)
 
@@ -102,6 +114,8 @@ def main():
     od_df = compute_optimal_deterministic_decision_function(prob_m_if_c=prob_m_if_c)
     # delta_S
     os_df = [bayesian_decision_from_statistical_decision_function(prob_m_c=prob_m_c, c=c) for c in range(len(prob_c))]
+    #loss_func
+    ls_func = loss_func(od_df=od_df)        #function returns "0" if sigma(C)=M and returns "1" if sigma(C)!=M
 
 if __name__ == "__main__":
     main()
