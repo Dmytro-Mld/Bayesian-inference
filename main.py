@@ -103,6 +103,45 @@ def bayesian_decision_from_statistical_decision_function(prob_m_c: list[list], c
         if decisional_prob_m[m] >= p:
             return m
 
+# Perform tests with error epsilon be allowed
+def perform_tests(size: int, prob_c: list, prob_m_c: list[list], prob_m_if_c: list[list], od_df: list, os_df: list, epsilon: float=pow(10, -9)):
+    # Test: sum P(c) = 1
+    sum = 0
+    for p_i in prob_c:
+        sum += p_i
+
+    if sum < 1.0 - epsilon and sum > 1.0 + epsilon:
+        raise ValueError(f"sum should be 1 but it is {sum} instead")
+
+    # Test: sum P(m, c) = 1
+    sum = 0
+    for l in prob_m_c:
+        for p in l:
+            sum += p
+
+    if sum < 1 - epsilon and sum > 1 + epsilon:
+        raise ValueError(f"sum should be 1 but it is {sum:0.3f} instead")
+    
+    # Test: sum_{m \in M} P(m, c) = 1
+    for c in range(size):
+        sum = 0
+        for m in range(size):
+            sum += prob_m_if_c[m][c]
+
+        if sum < 1 - epsilon and sum > 1 + epsilon:
+            raise ValueError(f"sum should be 1 but it is {sum:0.3f} instead")
+        
+    # Test: sum_{c \in C} P(m, c) = 1
+    for m in range(size):
+        sum = 0
+        for c in range(size):
+            sum += prob_m_if_c[m][c]
+
+        if sum < 1 - epsilon and sum > 1 + epsilon:
+            raise ValueError(f"sum should be 1 but it is {sum:0.3f} instead")
+    
+
+
 def main():
     # P(C)
     prob_c = compute_ciphertext_probability(prob_m=PROB_OPEN_TEXT, prob_k=PROB_KEY, cipher_table=CIPHER_TABLE)
@@ -116,6 +155,8 @@ def main():
     os_df = [bayesian_decision_from_statistical_decision_function(prob_m_c=prob_m_c, c=c) for c in range(len(prob_c))]
     #loss_func
     ls_func = loss_func(od_df=od_df)        #function returns "0" if sigma(C)=M and returns "1" if sigma(C)!=M
+
+    perform_tests(size=20, prob_c=prob_c, prob_m_c=prob_m_c, prob_m_if_c=prob_m_if_c, od_df=od_df, os_df=os_df)
 
 if __name__ == "__main__":
     main()
