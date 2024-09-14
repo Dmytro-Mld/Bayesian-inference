@@ -79,7 +79,7 @@ def compute_optimal_deterministic_decision_function(prob_m_if_c: list[list]) -> 
  
     return rez
 
-def bayesian_decision_from_statistical_decision_function(prob_m_c: list[list], c) -> list:
+def bayesian_decision_from_statistical_decision_function(prob_m_c: list[list], c) -> int:
     n_ = len(prob_m_c)
 
     decisional_prob_m = [0 for m in range(n_)]
@@ -92,10 +92,15 @@ def bayesian_decision_from_statistical_decision_function(prob_m_c: list[list], c
             return m
 
 def main():
+    # P(C)
     prob_c = compute_ciphertext_probability(prob_m=PROB_OPEN_TEXT, prob_k=PROB_KEY, cipher_table=CIPHER_TABLE)
+    # P(M, C)
     prob_m_c = compute_open_text_ciphertext_probability(prob_m=PROB_OPEN_TEXT, prob_k=PROB_KEY, cipher_table=CIPHER_TABLE)
+    # P(M | C)
     prob_m_if_c = compute_open_text_if_ciphertext_probability(prob_m_c=prob_m_c, prob_c=prob_c)
+    # delta_D
     od_df = compute_optimal_deterministic_decision_function(prob_m_if_c=prob_m_if_c)
+    # delta_S
     os_df = [bayesian_decision_from_statistical_decision_function(prob_m_c=prob_m_c, c=c) for c in range(len(prob_c))]
 
 if __name__ == "__main__":
