@@ -64,12 +64,25 @@ def compute_open_text_if_ciphertext_probability(prob_m_c: list[list], prob_c: li
  
     return prob
 
+def compute_optimal_deterministic_decision_function(prob_m_if_c: list[list]) -> list:
+    n = len(prob_m_if_c)
+
+    rez = [0 for c in range(n)]
+
+    for c in range(n):
+        prob = prob_m_if_c[0][c]
+        for m in range(n):
+            if prob < prob_m_if_c[m][c]:
+                prob = prob_m_if_c[m][c]
+                rez[c] = m
+ 
+    return rez
+
 def main():
     prob_c = compute_ciphertext_probability(prob_m=PROB_OPEN_TEXT, prob_k=PROB_KEY, cipher_table=CIPHER_TABLE)
     prob_m_c = compute_open_text_ciphertext_probability(prob_m=PROB_OPEN_TEXT, prob_k=PROB_KEY, cipher_table=CIPHER_TABLE)
     prob_m_if_c = compute_open_text_if_ciphertext_probability(prob_m_c=prob_m_c, prob_c=prob_c)
-
-    
+    od_df = compute_optimal_deterministic_decision_function(prob_m_if_c=prob_m_if_c)
 
 if __name__ == "__main__":
     main()
