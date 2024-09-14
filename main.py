@@ -1,3 +1,4 @@
+import random
 
 # Cipher table. There columns represent open text, rows represent keys and elements at the intersection are cipher texts  
 CIPHER_TABLE = [
@@ -78,11 +79,24 @@ def compute_optimal_deterministic_decision_function(prob_m_if_c: list[list]) -> 
  
     return rez
 
+def bayesian_decision_from_statistical_decision_function(prob_m_c: list[list], c) -> list:
+    n_ = len(prob_m_c)
+
+    decisional_prob_m = [0 for m in range(n_)]
+    for m_ in range(1, n_, 1):
+        decisional_prob_m[m_] = prob_m_c[m_][c] + decisional_prob_m[m_ - 1]
+    
+    p = random.uniform(0, decisional_prob_m[-1])
+    for m in range(n_):
+        if decisional_prob_m[m] >= p:
+            return m
+
 def main():
     prob_c = compute_ciphertext_probability(prob_m=PROB_OPEN_TEXT, prob_k=PROB_KEY, cipher_table=CIPHER_TABLE)
     prob_m_c = compute_open_text_ciphertext_probability(prob_m=PROB_OPEN_TEXT, prob_k=PROB_KEY, cipher_table=CIPHER_TABLE)
     prob_m_if_c = compute_open_text_if_ciphertext_probability(prob_m_c=prob_m_c, prob_c=prob_c)
     od_df = compute_optimal_deterministic_decision_function(prob_m_if_c=prob_m_if_c)
+    os_df = [bayesian_decision_from_statistical_decision_function(prob_m_c=prob_m_c, c=c) for c in range(len(prob_c))]
 
 if __name__ == "__main__":
     main()
