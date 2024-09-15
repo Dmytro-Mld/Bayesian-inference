@@ -161,22 +161,59 @@ def perform_tests(size: int, prob_c: list, prob_m_c: list[list], prob_m_if_c: li
         if sum < 1 - epsilon and sum > 1 + epsilon:
             raise ValueError(f"sum should be 1 but it is {sum:0.3f} instead")
 
+def print_table_float(table: list[list[float]], precision: int=3):
+    for l in table:
+        for c in range(len(l) - 1):
+            print(f"{l[c]:0.{precision}f}", end=", ")
+        
+        print(f"{l[-1]:0.{precision}f}")
+
+def print_list_float(l: list[float], precision: int=3):
+    for c in range(len(l) - 1):
+        print(f"{l[c]:0.{precision}f}", end=", ")
+    
+    print(f"{l[-1]:0.{precision}f}")
+
 def main():
     # P(C)
     prob_c = compute_ciphertext_probability(prob_m=PROB_OPEN_TEXT, prob_k=PROB_KEY, cipher_table=CIPHER_TABLE)
+    print("P(C)")
+    print_list_float(prob_c, precision=2)
+    print("")
+
     # P(M, C)
-    prob_m_c = compute_open_text_ciphertext_probability(prob_m=PROB_OPEN_TEXT, prob_k=PROB_KEY, cipher_table=CIPHER_TABLE)    
+    prob_m_c = compute_open_text_ciphertext_probability(prob_m=PROB_OPEN_TEXT, prob_k=PROB_KEY, cipher_table=CIPHER_TABLE)
+    print("P(M, C)")
+    print_table_float(prob_m_c)
+    print("")
+
     # P(M | C)
     prob_m_if_c = compute_open_text_if_ciphertext_probability(prob_m_c=prob_m_c, prob_c=prob_c)
+    print("P(M | C)")
+    print_table_float(prob_m_if_c)
+    print("")
+
     # delta_D
     od_df = compute_optimal_deterministic_decision_function(prob_m_if_c=prob_m_if_c)
+    print("delta_D")
+    print(od_df)
+    print("")
+
     # delta_S
     os_df = compute_optimal_stochastic_decision_function(prob_m_if_c=prob_m_if_c)
     # os_df = [bayesian_decision_from_stochastic_decision_function(prob_m_c=prob_m_c, c=c) for c in range(len(prob_c))]
+    print("delta_S")
+    print_table_float(os_df, precision=1)
+    print("")
+
     #loss_func
     ls_func = loss_func(od_df=od_df)        #function returns "0" if sigma(C)=M and returns "1" if sigma(C)!=M
+    print(f"loss function = {ls_func}")
+    print("")
 
     perform_tests(size=20, prob_c=prob_c, prob_m_c=prob_m_c, prob_m_if_c=prob_m_if_c, od_df=od_df, os_df=os_df)
+
+
 
 if __name__ == "__main__":
     main()
