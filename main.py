@@ -79,6 +79,27 @@ def compute_optimal_deterministic_decision_function(prob_m_if_c: list[list]) -> 
  
     return rez
 
+def compute_optimal_stochastic_decision_function(prob_m_if_c: list[list]) -> list:
+    n = len(prob_m_if_c)
+
+    rez = [[0 for m in range(n)] for c in range(n)]
+
+    for c in range(n):
+        max_prob_id = [0]
+        prob = prob_m_if_c[0][c]
+        for m in range(n):
+            if prob < prob_m_if_c[m][c]:
+                prob = prob_m_if_c[m][c]
+                max_prob_id = [m]
+            elif prob == prob_m_if_c[m][c]:
+                max_prob_id.append(m)
+        
+        coef = 1  / len(max_prob_id)
+        for id in max_prob_id:
+            rez[c][id] = coef
+ 
+    return rez
+
 def loss_func (od_df: list) -> list:
     n = len(od_df)
 
@@ -139,20 +160,19 @@ def perform_tests(size: int, prob_c: list, prob_m_c: list[list], prob_m_if_c: li
 
         if sum < 1 - epsilon and sum > 1 + epsilon:
             raise ValueError(f"sum should be 1 but it is {sum:0.3f} instead")
-    
-
 
 def main():
     # P(C)
     prob_c = compute_ciphertext_probability(prob_m=PROB_OPEN_TEXT, prob_k=PROB_KEY, cipher_table=CIPHER_TABLE)
     # P(M, C)
-    prob_m_c = compute_open_text_ciphertext_probability(prob_m=PROB_OPEN_TEXT, prob_k=PROB_KEY, cipher_table=CIPHER_TABLE)
+    prob_m_c = compute_open_text_ciphertext_probability(prob_m=PROB_OPEN_TEXT, prob_k=PROB_KEY, cipher_table=CIPHER_TABLE)    
     # P(M | C)
     prob_m_if_c = compute_open_text_if_ciphertext_probability(prob_m_c=prob_m_c, prob_c=prob_c)
     # delta_D
     od_df = compute_optimal_deterministic_decision_function(prob_m_if_c=prob_m_if_c)
     # delta_S
-    os_df = [bayesian_decision_from_stochastic_decision_function(prob_m_c=prob_m_c, c=c) for c in range(len(prob_c))]
+    os_df = compute_optimal_stochastic_decision_function(prob_m_if_c=prob_m_if_c)
+    # os_df = [bayesian_decision_from_stochastic_decision_function(prob_m_c=prob_m_c, c=c) for c in range(len(prob_c))]
     #loss_func
     ls_func = loss_func(od_df=od_df)        #function returns "0" if sigma(C)=M and returns "1" if sigma(C)!=M
 
