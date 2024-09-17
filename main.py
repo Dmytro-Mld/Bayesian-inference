@@ -193,22 +193,28 @@ def main():
     print_table_float(prob_m_if_c)
     print("")
 
-    # delta_D
+    # delta_D(C)
     od_df = compute_optimal_deterministic_decision_function(prob_m_if_c=prob_m_if_c)
-    print("delta_D")
+    print("delta_D(C)")
     print(od_df)
     print("")
 
-    # delta_S
+    # delta_S(M, C)
     os_df = compute_optimal_stochastic_decision_function(prob_m_if_c=prob_m_if_c)
-    # os_df = [bayesian_decision_from_stochastic_decision_function(prob_m_c=prob_m_c, c=c) for c in range(len(prob_c))]
-    print("delta_S")
+    print("delta_S(M, C)")
     print_table_float(os_df, precision=1)
+    print("")
+
+    # Example instance of Delta_S function
+    os_df_instance = [bayesian_decision_from_stochastic_decision_function(prob_m_c=os_df, c=c) for c in range(len(prob_c))]
+    print("delta_S(C) instance")
+    print(os_df_instance)
     print("")
 
     #loss_func
     ls_func = loss_func(od_df=od_df)        #function returns "0" if sigma(C)=M and returns "1" if sigma(C)!=M
-    print(f"loss function = {ls_func}")
+    print("loss function")
+    print(ls_func)
     print("")
 
     perform_tests(size=20, prob_c=prob_c, prob_m_c=prob_m_c, prob_m_if_c=prob_m_if_c, od_df=od_df, os_df=os_df)
