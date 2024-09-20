@@ -100,16 +100,26 @@ def compute_optimal_stochastic_decision_function(prob_m_if_c: list[list]) -> lis
  
     return rez
 
-def loss_func (od_df: list) -> list:
+def loss_func(od_df: list) -> list:
     n = len(od_df)
 
-    ls_func_res = [1 for i in range(n)]
+    ls_func_res = [[1 for i in range(n)] for j in range(n)]
 
-    max_index = od_df.index(max(od_df))
-
-    ls_func_res[max_index] = 0
+    for c in range(n):
+        m = od_df[c]
+        ls_func_res[m][c] = 0
 
     return ls_func_res
+
+def average_losses_of_od_df(prob_m_c: list[list], ls_func_od_df: list[list]) -> float:
+    n = len(ls_func_od_df)
+    al = 0
+
+    for m in range(n):
+        for c in range(n):
+            al += prob_m_c[m][c] * ls_func_od_df[m][c]
+
+    return al
 
 
 def bayesian_decision_from_stochastic_decision_function(prob_m_c: list[list], c) -> int:
@@ -212,9 +222,15 @@ def main():
     print("")
 
     #loss_func
-    ls_func = loss_func(od_df=od_df)        #function returns "0" if sigma(C)=M and returns "1" if sigma(C)!=M
-    print("loss function")
-    print(ls_func)
+    ls_func_od_df = loss_func(od_df=od_df)        #function returns a 20x20 table meaning "0" if sigma(C)=M and "1" if sigma(C)!=M
+    print("loss function of delta_D(C)")
+    print(ls_func_od_df)
+    print("")
+
+    #loss_func
+    av_ls_od_df = average_losses_of_od_df(prob_m_c=prob_m_c, ls_func_od_df=ls_func_od_df)
+    print("average losses of delta_D(C)")
+    print(av_ls_od_df)
     print("")
 
     perform_tests(size=20, prob_c=prob_c, prob_m_c=prob_m_c, prob_m_if_c=prob_m_if_c, od_df=od_df, os_df=os_df)
