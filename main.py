@@ -100,7 +100,7 @@ def compute_optimal_stochastic_decision_function(prob_m_if_c: list[list]) -> lis
  
     return rez
 
-def loss_func(od_df: list) -> list:
+def loss_func_od_df(od_df: list) -> list:
     n = len(od_df)
 
     ls_func_res = [[1 for i in range(n)] for j in range(n)]
@@ -111,16 +111,29 @@ def loss_func(od_df: list) -> list:
 
     return ls_func_res
 
-def average_losses_of_od_df(prob_m_c: list[list], ls_func_od_df: list[list]) -> float:
-    n = len(ls_func_od_df)
+def average_losses(prob_m_c: list[list], ls_func: list[list]) -> float:
+    n = len(ls_func)
     al = 0
 
     for m in range(n):
         for c in range(n):
-            al += prob_m_c[m][c] * ls_func_od_df[m][c]
+            al += prob_m_c[m][c] * ls_func[m][c]
 
     return al
 
+def loss_func_os_df(os_df: list) -> list:
+    n = len(os_df)
+    rez = [[0 for i in range(n)] for i in range(n)]
+
+    #chosing your message number and ciphertext number
+
+    for c in range(n):
+        for m in range(n):
+            for t in range(n):
+                if t != m:
+                    rez[c][m] += os_df[c][t]
+
+    return rez
 
 def bayesian_decision_from_stochastic_decision_function(prob_m_c: list[list], c) -> int:
     n_ = len(prob_m_c)
@@ -221,17 +234,30 @@ def main():
     print(os_df_instance)
     print("")
 
-    #loss_func
-    ls_func_od_df = loss_func(od_df=od_df)        #function returns a 20x20 table meaning "0" if sigma(C)=M and "1" if sigma(C)!=M
-    print("loss function of delta_D(C)")
+    #loss_func_od_df
+    ls_func_od_df = loss_func_od_df(od_df=od_df)        #function returns a 20x20 table meaning "0" if sigma(C)=M and "1" if sigma(C)!=M
+    print("loss function of delta_D(M, C)")
     print(ls_func_od_df)
     print("")
 
-    #loss_func
-    av_ls_od_df = average_losses_of_od_df(prob_m_c=prob_m_c, ls_func_od_df=ls_func_od_df)
-    print("average losses of delta_D(C)")
+    #average_loss_func_od_df
+    av_ls_od_df = average_losses(prob_m_c=prob_m_c, ls_func=ls_func_od_df)
+    print("average losses of delta_D(M, C)")
     print(av_ls_od_df)
     print("")
+
+    #loss_func_os_df
+    ls_func_os_df = loss_func_os_df(os_df=os_df)
+    print("loss function of delta_S(M, C)")
+    print(ls_func_os_df)
+    print("")
+
+    #average_loss_func_os_df
+    av_ls_os_df = average_losses(prob_m_c=prob_m_c, ls_func=ls_func_os_df)
+    print("average losses of delta_S(M, C)")
+    print(av_ls_os_df)
+    print("")
+
 
     perform_tests(size=20, prob_c=prob_c, prob_m_c=prob_m_c, prob_m_if_c=prob_m_if_c, od_df=od_df, os_df=os_df)
 
