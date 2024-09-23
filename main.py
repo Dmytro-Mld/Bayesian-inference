@@ -87,7 +87,7 @@ def compute_optimal_stochastic_decision_function(prob_m_if_c: list[list]) -> lis
     for c in range(n):
         max_prob_id = [0]
         prob = prob_m_if_c[0][c]
-        for m in range(n):
+        for m in range(1, n):
             if prob < prob_m_if_c[m][c]:
                 prob = prob_m_if_c[m][c]
                 max_prob_id = [m]
@@ -154,7 +154,7 @@ def perform_tests(size: int, prob_c: list, prob_m_c: list[list], prob_m_if_c: li
     for p_i in prob_c:
         sum += p_i
 
-    if sum < 1.0 - epsilon and sum > 1.0 + epsilon:
+    if sum < 1.0 - epsilon or sum > 1.0 + epsilon:
         raise ValueError(f"sum should be 1 but it is {sum} instead")
 
     # Test: sum P(m, c) = 1
@@ -163,7 +163,7 @@ def perform_tests(size: int, prob_c: list, prob_m_c: list[list], prob_m_if_c: li
         for p in l:
             sum += p
 
-    if sum < 1 - epsilon and sum > 1 + epsilon:
+    if sum < 1 - epsilon or sum > 1 + epsilon:
         raise ValueError(f"sum should be 1 but it is {sum:0.3f} instead")
     
     # Test: sum_{m \in M} P(m, c) = 1
@@ -172,16 +172,16 @@ def perform_tests(size: int, prob_c: list, prob_m_c: list[list], prob_m_if_c: li
         for m in range(size):
             sum += prob_m_if_c[m][c]
 
-        if sum < 1 - epsilon and sum > 1 + epsilon:
+        if sum < 1 - epsilon or sum > 1 + epsilon:
             raise ValueError(f"sum should be 1 but it is {sum:0.3f} instead")
-        
-    # Test: sum_{c \in C} P(m, c) = 1
-    for m in range(size):
+
+    # Test: sum_{m \in M} P(m|c) = 1
+    for c in range(size):
         sum = 0
-        for c in range(size):
+        for m in range(size):
             sum += prob_m_if_c[m][c]
 
-        if sum < 1 - epsilon and sum > 1 + epsilon:
+        if sum < 1 - epsilon or sum > 1 + epsilon:
             raise ValueError(f"sum should be 1 but it is {sum:0.3f} instead")
 
 def print_table_float(table: list[list[float]], precision: int=3):
@@ -190,6 +190,13 @@ def print_table_float(table: list[list[float]], precision: int=3):
             print(f"{l[c]:0.{precision}f}", end=", ")
         
         print(f"{l[-1]:0.{precision}f}")
+
+def print_table_int(table: list[list[int]]):
+    for l in table:
+        for c in range(len(l) - 1):
+            print(f"{l[c]:>3}", end=", ")
+        
+        print(f"{l[-1]:>3}")
 
 def print_list_float(l: list[float], precision: int=3):
     for c in range(len(l) - 1):
@@ -237,7 +244,7 @@ def main():
     #loss_func_od_df
     ls_func_od_df = loss_func_od_df(od_df=od_df)        #function returns a 20x20 table meaning "0" if sigma(C)=M and "1" if sigma(C)!=M
     print("loss function of delta_D(M, C)")
-    print(ls_func_od_df)
+    print_table_int(ls_func_od_df)
     print("")
 
     #average_loss_func_od_df
@@ -249,7 +256,7 @@ def main():
     #loss_func_os_df
     ls_func_os_df = loss_func_os_df(os_df=os_df)
     print("loss function of delta_S(M, C)")
-    print(ls_func_os_df)
+    print_table_int(ls_func_os_df)
     print("")
 
     #average_loss_func_os_df
