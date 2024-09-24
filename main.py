@@ -237,7 +237,7 @@ def main():
     #loss_func_od_df
     ls_func_od_df = loss_func_od_df(od_df=od_df)        #function returns a 20x20 table meaning "0" if sigma(C)=M and "1" if sigma(C)!=M
     print("loss function of delta_D(M, C)")
-    print(ls_func_od_df)
+    print_table_float(ls_func_od_df, precision=1)
     print("")
 
     #average_loss_func_od_df
@@ -249,7 +249,7 @@ def main():
     #loss_func_os_df
     ls_func_os_df = loss_func_os_df(os_df=os_df)
     print("loss function of delta_S(M, C)")
-    print(ls_func_os_df)
+    print_table_float(ls_func_os_df, precision=1)
     print("")
 
     #average_loss_func_os_df
