@@ -131,7 +131,7 @@ def loss_func_os_df(os_df: list) -> list:
         for m in range(n):
             for t in range(n):
                 if t != m:
-                    rez[c][m] += os_df[c][t]
+                    rez[m][c] += os_df[c][t]
 
     return rez
 
